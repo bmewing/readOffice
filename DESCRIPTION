@@ -1,0 +1,18 @@
+Package: readOffice
+Type: Package
+Title: Read Text out of Modern Office Files
+Version: 0.1.0
+Author: Mark Ewing
+Maintainer: Mark Ewing <b.mark@ewingsonline.com>
+Description: Provides a series of functions to read in text from 'unstructured'
+    modern Microsoft Office files (XML based files) such as Word and PowerPoint.
+    This does not read in structured data (from Excel or Access) as there are many
+    other great packages to that do so already.
+License: Unlimited
+Encoding: UTF-8
+LazyData: true
+Imports:
+    xml2 (>= 1.0.0),
+    rvest (>= 0.3.2),
+    purrr (>= 0.2.2)
+RoxygenNote: 5.0.1
