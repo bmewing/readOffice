@@ -3,4 +3,4 @@
 * ubuntu (on travis-ci)
 
 ## R CMD check results
-There were no ERRORs, WARNINGs or NOTEs.
+There were no ERRORs, WARNINGs or NOTEs (though this is the first time the package is being submitted).
