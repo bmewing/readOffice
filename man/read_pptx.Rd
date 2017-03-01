@@ -18,4 +18,8 @@ Read data from a Modern PowerPoint File
 \details{
 Only accepts one file at a time and only .pptx files.  Modifying file extensions will not work.
 }
+\examples{
+read_pptx(system.file('extdata','example.pptx',package='readOffice'))
+
+}
 

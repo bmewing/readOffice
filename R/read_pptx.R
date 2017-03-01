@@ -1,9 +1,17 @@
 #' Read data from a Modern PowerPoint File
 #'
 #' @param pptx The .pptx file to read
-#' @return Vector of text, broken by paragraph
+#' @return List containing one element per slide.
+#'
 #' @details
 #' Only accepts one file at a time and only .pptx files.  Modifying file extensions will not work.
+#'
+#' The returned list contains named lists of the components on the slide, each element of which is a data.frame containing the text and minor details about the structure on the page.
+#' "Bulleted" indicates if the text is part of a bulleted or numbered list on the slide.
+#' "Hierarchy" indicates the tabbed depth of the element in a bulleted or numbered list.
+#'
+#' @examples
+#' read_pptx(system.file('extdata','example.pptx',package='readOffice'))
 #'
 #' @export
 read_pptx = function(pptx){
@@ -23,12 +31,7 @@ read_pptx = function(pptx){
   }
   slides = list.files(file.path(td,"ppt","slides"),pattern = ".xml",full.names = T)
 
-  output = purrr::map(slides,function(x){
-    fc = xml2::read_xml(x)
-    on = rvest::xml_nodes(fc,"a\\:t")
-    ot = xml2::xml_text(on)
-    return(ot)
-  })
+  output = purrr::map(slides,readOffice:::processSlide)
 
   unlink(td, recursive=TRUE)
   return(output)

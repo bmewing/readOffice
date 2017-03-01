@@ -18,4 +18,8 @@ Read data from a Modern Word File
 \details{
 Only accepts one file at a time and only .docx files.  Modifying file extensions will not work.
 }
+\examples{
+read_docx(docx = system.file('extdata','example.docx',package='readOffice'))
+
+}
 

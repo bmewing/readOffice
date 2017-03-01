@@ -5,6 +5,9 @@
 #' @details
 #' Only accepts one file at a time and only .docx files.  Modifying file extensions will not work.
 #'
+#' @examples
+#' read_docx(docx = system.file('extdata','example.docx',package='readOffice'))
+#'
 #' @export
 read_docx = function(docx){
   ext = rev(strsplit(docx,"\\.")[[1]])[1]
@@ -19,5 +22,6 @@ read_docx = function(docx){
   on = rvest::xml_nodes(fc,"w\\:p")
   ot = xml2::xml_text(on)
   unlink(td, recursive=TRUE)
+
   return(ot)
 }
