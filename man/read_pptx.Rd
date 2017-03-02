@@ -10,13 +10,17 @@ read_pptx(pptx)
 \item{pptx}{The .pptx file to read}
 }
 \value{
-Vector of text, broken by paragraph
+List containing one element per slide.
 }
 \description{
 Read data from a Modern PowerPoint File
 }
 \details{
 Only accepts one file at a time and only .pptx files.  Modifying file extensions will not work.
+
+The returned list contains named lists of the components on the slide, each element of which is a data.frame containing the text and minor details about the structure on the page.
+"Bulleted" indicates if the text is part of a bulleted or numbered list on the slide.
+"Hierarchy" indicates the tabbed depth of the element in a bulleted or numbered list.
 }
 \examples{
 read_pptx(system.file('extdata','example.pptx',package='readOffice'))

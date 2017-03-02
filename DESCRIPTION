@@ -1,7 +1,7 @@
 Package: readOffice
 Type: Package
 Title: Read Text Out of Modern Office Files
-Version: 0.2.0
+Version: 0.2.1
 Author: Mark Ewing
 Maintainer: Mark Ewing <b.mark@ewingsonline.com>
 Description: Reads in text from 'unstructured' modern Microsoft Office files (XML based files) such as Word and PowerPoint.

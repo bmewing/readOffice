@@ -1,8 +1,15 @@
-#' @importFrom magrittr "%>%"
-
 makeNumeric = function(x){
   o = if(length(x) != 0) as.numeric(x) else NA
   return(o)
+}
+
+processTable = function(tbl){
+  rows = rvest::xml_nodes(tbl,"a\\:tr")
+  table = purrr::map(rows,function(r){
+    rvest::xml_nodes(r,"a\\:tc") %>%
+      xml2::xml_text()
+  }) %>% do.call(rbind,.)
+  return(table)
 }
 
 processSlide = function(xml){
@@ -37,7 +44,7 @@ processSlide = function(xml){
         bullet = y %>%
           rvest::xml_nodes("a\\:pPr") %>%
           rvest::html_attr("lvl") %>%
-          readOffice:::makeNumeric()
+          makeNumeric()
         return(bullet)
       }) %>% unlist()
     }
@@ -54,10 +61,21 @@ processSlide = function(xml){
   })
 
   output = purrr::map(seq_along(blockContent),function(x){
+    if(is.null(text[[x]]) | is.null(lvl[[x]]) | is.null(bulleted)) return(NULL)
     nlvl = ifelse(bulleted[[x]] & is.na(lvl[[x]]),0,lvl[[x]])
-    data.frame(Text = text[[x]],Bulleted = bulleted[[x]],Hierarchy = (bulleted[[x]]+nlvl),stringsAsFactors = F)
+    tmp = data.frame(Text = text[[x]],Bulleted = bulleted[[x]],Hierarchy = (bulleted[[x]]+nlvl),stringsAsFactors = F)
+    tmp = tmp[tmp$Text != "",]
+    tmp$Hierarchy[tmp$Bulleted == FALSE] = NA
+    if(nrow(tmp) == 0) return(NULL) else return(tmp)
   })
   names(output) = blockNames
 
-  return(output)
+  tables = rvest::xml_nodes(fc,"a\\:tbl")
+  if(length(tables) > 0){
+    for(i in seq_along(tables)){
+      `[[`(output,paste0("Table ",i)) = processTable(tables[i])
+    }
+  }
+
+  return(output[!sapply(output,is.null)])
 }
