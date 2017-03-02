@@ -8,7 +8,7 @@ processTable = function(tbl){
   table = purrr::map(rows,function(r){
     rvest::xml_nodes(r,"a\\:tc") %>%
       xml2::xml_text()
-  }) %>% do.call(rbind,.)
+  }) %>% do.call(what = rbind)
   return(table)
 }
 
