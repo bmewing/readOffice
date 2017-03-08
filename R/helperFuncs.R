@@ -4,7 +4,7 @@ makeNumeric = function(x){
 }
 
 processTable = function(tbl){
-  rows = rvest::xml_nodes(tbl,"a\\:tr")
+rows = rvest::xml_nodes(tbl,"a\\:tr")
   table = purrr::map(rows,function(r){
     rvest::xml_nodes(r,"a\\:tc") %>%
       xml2::xml_text()

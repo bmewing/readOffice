@@ -10,16 +10,17 @@ read_docx(docx)
 \item{docx}{The .docx file to read}
 }
 \value{
-Vector of text, broken by paragraph
+Vector of document text
 }
 \description{
 Read data from a Modern Word File
 }
 \details{
 Only accepts one file at a time and only .docx files.  Modifying file extensions will not work.
+
+Text is broken out into the XML defined paragraphs in the vector.
 }
 \examples{
 read_docx(docx = system.file('extdata','example.docx',package='readOffice'))
 
 }
-
