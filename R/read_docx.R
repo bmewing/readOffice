@@ -24,8 +24,8 @@ read_docx = function(docx){
   fc = xml2::read_xml(gsub("<w:br/>","&#160;",as.character(fc)))
   on = rvest::xml_nodes(fc,"w\\:p")
   ot = xml2::xml_text(on)
-  ot = gsub("[\n ]+"," ",ot)
-  ot = gsub("[\n ]+$|^[\n ]+","",ot)
+  ot = gsub("\n[[:space:]\n]+","\n",ot)
+  ot = gsub("\n$","",ot)
   unlink(td, recursive=TRUE)
   return(ot)
 }
