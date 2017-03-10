@@ -3,11 +3,47 @@ makeNumeric = function(x){
   return(o)
 }
 
-processTable = function(tbl){
-rows = rvest::xml_nodes(tbl,"a\\:tr")
+docxNodeType = function(node){
+  name = rvest::html_name(node)
+  if(name == "tbl") return("tbl")
+  type = rvest::html_attr(rvest::xml_node(node,"w\\:br"),"type")
+  if(!is.na(type) && type == "page") return("pbr")
+  drawing = rvest::xml_node(node,"w\\:drawing")
+  if(!is.na(drawing)) return("drw")
+  if(xml2::xml_text(node) == "") return("emp")
+  return("txt")
+}
+
+processParagraph = function(p){
+  out = p %>%
+    xml2::xml_text() %>%
+    gsub("\n[[:space:]\n]+","\n",.) %>%
+    gsub("\n$","",.)
+  return(out)
+}
+
+processDrawing = function(d){
+  out = d %>%
+    rvest::xml_nodes("wps\\:txbx") %>%
+    xml2::xml_text() %>%
+    gsub("\n[[:space:]\n]+","\n",.) %>%
+    gsub("\n$","",.)
+  return(out)
+}
+
+processTable = function(tbl,type){
+  row_node = ifelse(type=="docx",'w\\:tr','a\\:tr')
+  col_node = ifelse(type=="docx",'w\\:tc','a\\:tc')
+  rows = rvest::xml_nodes(tbl,row_node)
   table = purrr::map(rows,function(r){
-    rvest::xml_nodes(r,"a\\:tc") %>%
-      xml2::xml_text()
+    cols = rvest::xml_nodes(r,col_node)
+    purrr::map(cols,function(l){
+      l %>%
+        as.character() %>%
+        gsub("<.*?>","",.)
+    }) %>% unlist() %>%
+      gsub("\n[[:space:]\n]+","\n",.) %>%
+      gsub("\n$|^\n","",.)
   }) %>% do.call(what = rbind)
   return(table)
 }
@@ -73,7 +109,7 @@ processSlide = function(xml){
   tables = rvest::xml_nodes(fc,"a\\:tbl")
   if(length(tables) > 0){
     for(i in seq_along(tables)){
-      `[[`(output,paste0("Table ",i)) = processTable(tables[i])
+      `[[`(output,paste0("Table ",i)) = processTable(tables[i],"pptx")
     }
   }
 

@@ -5,6 +5,7 @@ Version: 0.2.3
 Author: Mark Ewing
 Maintainer: Mark Ewing <b.mark@ewingsonline.com>
 URL: https://github.com/bmewing/readOffice
+BugReports: https://github.com/bmewing/readOffice/issues
 Description: Reads in text from 'unstructured' modern Microsoft Office files (XML based files) such as Word (.docx) and PowerPoint (.pptx).
     This does not read in structured data (from Excel or Access) as there are many other great packages to that do so already.
 License: MIT + file LICENSE
