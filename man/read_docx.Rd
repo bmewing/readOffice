@@ -4,13 +4,19 @@
 \alias{read_docx}
 \title{Read data from a Modern Word File}
 \usage{
-read_docx(docx)
+read_docx(docx, tables = T, drawings = T, diagrams = T)
 }
 \arguments{
 \item{docx}{The .docx file to read}
+
+\item{tables}{Should tables be processed from the document?}
+
+\item{drawings}{Should drawings be processed from the document?}
+
+\item{diagrams}{Should diagrams be processed from the document?}
 }
 \value{
-Vector of document text
+Named list with document contents
 }
 \description{
 Read data from a Modern Word File
@@ -18,7 +24,9 @@ Read data from a Modern Word File
 \details{
 Only accepts one file at a time and only .docx files.  Modifying file extensions will not work.
 
-Text is broken out into the XML defined paragraphs in the vector.
+List is comprised of named elements, one per 'section' (sections are recognized after a page break).  If tables exist in the document and are processed, then the named list elements will be lists containing the text of paragraphs, drawings (if present and processed) and matrices holding the table structure.  Otherwise, the list elements will contain vectors of the text processed.
+
+Diagrams are typically what Microsoft calls 'SmartArt'
 }
 \examples{
 read_docx(docx = system.file('extdata','example.docx',package='readOffice'))
