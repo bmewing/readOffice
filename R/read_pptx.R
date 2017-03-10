@@ -27,13 +27,15 @@ read_pptx = function(pptx){
   np = tempfile(tmpdir = td,fileext=".zip")
   file.copy(pptx,np,T)
   utils::unzip(np,exdir=td)
-  slides = list.files(file.path(td,"ppt","slides"),pattern = ".xml",full.names = T)
-  nnum = nchar(gsub("[\\.a-zA-Z]","",slides))
-  extran = max(nnum)-nnum
-  for(i in seq_along(slides)){
-    if(extran[i] > 0) file.rename(slides[i],gsub("(.*?slide)([0-9]+\\..*)",paste0("\\1",rep("0",extran[i]),"\\2"),slides[i]))
+  slides = list.files(file.path(td,"ppt","slides"),pattern = "\\.xml",full.names = T)
+  if(length(slides) > 9){
+    nnum = nchar(gsub(".*?slide([0-9]+)\\.xml","",slides))
+    extran = max(nnum)-nnum
+    for(i in seq_along(slides)){
+      if(extran[i] > 0) file.rename(slides[i],gsub("(.*?slide)([0-9]+\\..*)",paste0("\\1",rep("0",extran[i]),"\\2"),slides[i]))
+    }
+    slides = list.files(file.path(td,"ppt","slides"),pattern = ".xml",full.names = T)
   }
-  slides = list.files(file.path(td,"ppt","slides"),pattern = ".xml",full.names = T)
 
   output = purrr::map(slides,processSlide)
 

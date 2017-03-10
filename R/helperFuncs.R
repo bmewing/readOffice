@@ -9,9 +9,18 @@ docxNodeType = function(node){
   type = rvest::html_attr(rvest::xml_node(node,"w\\:br"),"type")
   if(!is.na(type) && type == "page") return("pbr")
   drawing = rvest::xml_node(node,"w\\:drawing")
-  if(!is.na(drawing)) return("drw")
+  if(!is.na(drawing)){
+    if(is.na(rvest::xml_node(node,"wps\\:txbx"))) return("emp") else return("drw")
+  }
   if(xml2::xml_text(node) == "") return("emp")
   return("txt")
+}
+
+processDiagram = function(d){
+  text = xml2::read_xml(d) %>%
+    rvest::xml_nodes("a\\:p") %>%
+    xml2::xml_text()
+  return(text[text != ""])
 }
 
 processParagraph = function(p){
