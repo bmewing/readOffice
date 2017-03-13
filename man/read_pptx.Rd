@@ -4,10 +4,16 @@
 \alias{read_pptx}
 \title{Read data from a Modern PowerPoint File}
 \usage{
-read_pptx(pptx)
+read_pptx(pptx, tables = T, drawings = T, diagrams = T)
 }
 \arguments{
 \item{pptx}{The .pptx file to read}
+
+\item{tables}{Should tables be processed from the document?}
+
+\item{drawings}{Should drawings be processed from the document?}
+
+\item{diagrams}{Should diagrams be processed from the document?}
 }
 \value{
 List containing slide elements.
