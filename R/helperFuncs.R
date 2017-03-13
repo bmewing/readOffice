@@ -25,7 +25,7 @@ processDiagram_DOCX = function(d){
 
 processDiagram_PPTX = local({
   id = 1
-  function(d,r=FALSE,print=TRUE){
+  function(d,r=FALSE){
     if(r){
       id <<- 1
       return(TRUE)
