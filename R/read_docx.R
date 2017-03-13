@@ -68,7 +68,7 @@ read_docx = function(docx,tables = T,drawings = T,diagrams = T){
       d = list.files(file.path(td,"word","diagrams"),pattern = ".xml",full.names = T)
     }
     for(i in seq_along(d)){
-      `[[`(output,paste0("Diagram ",i)) = processDiagram(d[i])
+      `[[`(output,paste0("Diagram ",i)) = processDiagram_DOCX(d[i])
     }
   }
 

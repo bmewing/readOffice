@@ -16,12 +16,28 @@ docxNodeType = function(node){
   return("txt")
 }
 
-processDiagram = function(d){
+processDiagram_DOCX = function(d){
   text = xml2::read_xml(d) %>%
     rvest::xml_nodes("a\\:p") %>%
     xml2::xml_text()
   return(text[text != ""])
 }
+
+processDiagram_PPTX = local({
+  id = 1
+  function(d,r=FALSE,print=TRUE){
+    if(r){
+      id <<- 1
+      return(TRUE)
+    }
+    if(print) print(id)
+    text = xml2::read_xml(d[id]) %>%
+      rvest::xml_nodes("a\\:p") %>%
+      xml2::xml_text()
+    id <<- id+1
+    return(text[text != ""])
+  }
+})
 
 processParagraph = function(p){
   out = p %>%
@@ -57,7 +73,7 @@ processTable = function(tbl,type){
   return(table)
 }
 
-processSlide = function(xml){
+processSlide = function(xml,dgrm,tbl,dlist){
   fc = xml2::read_xml(xml)
   blocks = rvest::xml_nodes(fc,"p\\:sp")
   blockNames = blocks %>%
@@ -115,12 +131,24 @@ processSlide = function(xml){
   })
   names(output) = blockNames
 
-  tables = rvest::xml_nodes(fc,"a\\:tbl")
-  if(length(tables) > 0){
-    for(i in seq_along(tables)){
-      `[[`(output,paste0("Table ",i)) = processTable(tables[i],"pptx")
+  if(tbl){
+    tables = rvest::xml_nodes(fc,"a\\:tbl")
+    if(length(tables) > 0){
+      for(i in seq_along(tables)){
+        `[[`(output,paste0("Table ",i)) = processTable(tables[i],"pptx")
+      }
     }
   }
+
+  if(dgrm){
+    diagrams = rvest::xml_nodes(fc,"dgm\\:relIds")
+    if(length(diagrams) > 0){
+      for(i in seq_along(diagrams)){
+        `[[`(output,paste0("Diagram ",i)) = processDiagram_PPTX(dlist,FALSE)
+      }
+    }
+  }
+
 
   return(output[!sapply(output,is.null)])
 }
