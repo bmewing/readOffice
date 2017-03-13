@@ -1,6 +1,9 @@
 #' Read data from a Modern PowerPoint File
 #'
 #' @param pptx The .pptx file to read
+#' @param tables Should tables be processed from the document?
+#' @param drawings Should drawings be processed from the document?
+#' @param diagrams Should diagrams be processed from the document?
 #' @return List containing slide elements.
 #'
 #' @details
@@ -16,9 +19,10 @@
 #'
 #' @examples
 #' read_pptx(system.file('extdata','example.pptx',package='readOffice'))
+#' read_pptx(system.file('extdata','example.pptx',package='readOffice'),diagrams=FALSE)
 #'
 #' @export
-read_pptx = function(pptx){
+read_pptx = function(pptx,tables = T,drawings = T,diagrams = T){
   ext = rev(strsplit(pptx,"\\.")[[1]])[1]
   if(ext != "pptx") stop("Only pptx file formats are supported.")
 
@@ -37,7 +41,21 @@ read_pptx = function(pptx){
     slides = list.files(file.path(td,"ppt","slides"),pattern = ".xml",full.names = T)
   }
 
-  output = purrr::map(slides,processSlide)
+  d = c()
+  if(diagrams){
+    reset = processDiagram_PPTX(d=NULL,r=TRUE)
+    d = list.files(file.path(td,"ppt","diagrams"),pattern = "data[0-9]+\\.xml",full.names = T)
+    if(length(d) > 9){
+      nnum = nchar(gsub(".*?data([0-9]+)\\.xml","\\1",d))
+      extran = max(nnum)-nnum
+      for(i in seq_along(slides)){
+        if(extran[i] > 0) file.rename(slides[i],gsub("(.*?data)([0-9]+\\..*)",paste0("\\1",rep("0",extran[i]),"\\2"),slides[i]))
+      }
+      d = list.files(file.path(td,"ppt","diagrams"),pattern = ".xml",full.names = T)
+    }
+  }
+
+  output = purrr::map(slides,processSlide,tbl=tables,dgrm=diagrams,drw=drawings,dlist=d)
 
   unlink(td, recursive=TRUE)
   return(output)

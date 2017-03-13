@@ -14,6 +14,7 @@
 #'
 #' @examples
 #' read_docx(docx = system.file('extdata','example.docx',package='readOffice'))
+#' read_docx(docx = system.file('extdata','example.docx',package='readOffice'),diagrams=FALSE)
 #'
 #' @export
 read_docx = function(docx,tables = T,drawings = T,diagrams = T){
@@ -62,13 +63,13 @@ read_docx = function(docx,tables = T,drawings = T,diagrams = T){
     if(length(d) > 9){
       nnum = nchar(gsub(".*?data([0-9]+)\\.xml","\\1",d))
       extran = max(nnum)-nnum
-      for(i in seq_along(slides)){
-        if(extran[i] > 0) file.rename(slides[i],gsub("(.*?data)([0-9]+\\..*)",paste0("\\1",rep("0",extran[i]),"\\2"),slides[i]))
+      for(i in seq_along(d)){
+        if(extran[i] > 0) file.rename(d[i],gsub("(.*?data)([0-9]+\\..*)",paste0("\\1",rep("0",extran[i]),"\\2"),d[i]))
       }
       d = list.files(file.path(td,"word","diagrams"),pattern = ".xml",full.names = T)
     }
     for(i in seq_along(d)){
-      `[[`(output,paste0("Diagram ",i)) = processDiagram(d[i])
+      `[[`(output,paste0("Diagram ",i)) = processDiagram_DOCX(d[i])
     }
   }
 

@@ -1,7 +1,7 @@
 Package: readOffice
 Type: Package
 Title: Read Text Out of Modern Office Files
-Version: 0.2.3
+Version: 0.3.0
 Author: Mark Ewing
 Maintainer: Mark Ewing <b.mark@ewingsonline.com>
 URL: https://github.com/bmewing/readOffice

@@ -16,18 +16,33 @@ docxNodeType = function(node){
   return("txt")
 }
 
-processDiagram = function(d){
+processDiagram_DOCX = function(d){
   text = xml2::read_xml(d) %>%
     rvest::xml_nodes("a\\:p") %>%
     xml2::xml_text()
   return(text[text != ""])
 }
 
+processDiagram_PPTX = local({
+  id = 1
+  function(d,r=FALSE){
+    if(r){
+      id <<- 1
+      return(TRUE)
+    }
+    text = xml2::read_xml(d[id]) %>%
+      rvest::xml_nodes("a\\:p") %>%
+      xml2::xml_text()
+    id <<- id+1
+    return(text[text != ""])
+  }
+})
+
 processParagraph = function(p){
   out = p %>%
     xml2::xml_text() %>%
-    gsub("\n[[:space:]\n]+","\n",.) %>%
-    gsub("\n$","",.)
+    gsub(pattern="\n[[:space:]\n]+",replacement="\n") %>%
+    gsub(pattern="\n$",replacement="")
   return(out)
 }
 
@@ -35,8 +50,8 @@ processDrawing = function(d){
   out = d %>%
     rvest::xml_nodes("wps\\:txbx") %>%
     xml2::xml_text() %>%
-    gsub("\n[[:space:]\n]+","\n",.) %>%
-    gsub("\n$","",.)
+    gsub(pattern="\n[[:space:]\n]+",replacement="\n") %>%
+    gsub(pattern="\n$",replacement="")
   return(out)
 }
 
@@ -49,20 +64,32 @@ processTable = function(tbl,type){
     purrr::map(cols,function(l){
       l %>%
         as.character() %>%
-        gsub("<.*?>","",.)
+        gsub(pattern="<.*?>",replacement="")
     }) %>% unlist() %>%
-      gsub("\n[[:space:]\n]+","\n",.) %>%
-      gsub("\n$|^\n","",.)
+      gsub(pattern="\n[[:space:]\n]+",replacement="\n") %>%
+      gsub(pattern="\n$|^\n",replacement="")
   }) %>% do.call(what = rbind)
   return(table)
 }
 
-processSlide = function(xml){
+processSlide = function(xml,dgrm,tbl,drw,dlist){
   fc = xml2::read_xml(xml)
   blocks = rvest::xml_nodes(fc,"p\\:sp")
+
+  if(!drw){
+    keep = purrr::map(blocks,function(x){
+      x %>%
+        rvest::xml_node(css="a\\:prstGeom") %>%
+        xml2::xml_attr("prst")
+    }) %>% unlist() %>%
+      is.na()
+    blocks = blocks[keep]
+  }
+
   blockNames = blocks %>%
     rvest::xml_node("p\\:cNvPr") %>%
     rvest::html_attr("name")
+
   blockContent = purrr::map(blocks,rvest::xml_nodes,css="a\\:p")
   bulleted = purrr::map(seq_along(blockContent),function(x){
     output = if(grepl("^Title",blockNames[x])) {
@@ -115,12 +142,24 @@ processSlide = function(xml){
   })
   names(output) = blockNames
 
-  tables = rvest::xml_nodes(fc,"a\\:tbl")
-  if(length(tables) > 0){
-    for(i in seq_along(tables)){
-      `[[`(output,paste0("Table ",i)) = processTable(tables[i],"pptx")
+  if(tbl){
+    tables = rvest::xml_nodes(fc,"a\\:tbl")
+    if(length(tables) > 0){
+      for(i in seq_along(tables)){
+        `[[`(output,paste0("Table ",i)) = processTable(tables[i],"pptx")
+      }
     }
   }
+
+  if(dgrm){
+    diagrams = rvest::xml_nodes(fc,"dgm\\:relIds")
+    if(length(diagrams) > 0){
+      for(i in seq_along(diagrams)){
+        `[[`(output,paste0("Diagram ",i)) = processDiagram_PPTX(dlist,FALSE)
+      }
+    }
+  }
+
 
   return(output[!sapply(output,is.null)])
 }
