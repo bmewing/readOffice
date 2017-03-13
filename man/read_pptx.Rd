@@ -34,5 +34,6 @@ Alternatively, returns a matrix for tables on the slide.
 }
 \examples{
 read_pptx(system.file('extdata','example.pptx',package='readOffice'))
+read_pptx(system.file('extdata','example.pptx',package='readOffice'),diagrams=FALSE)
 
 }

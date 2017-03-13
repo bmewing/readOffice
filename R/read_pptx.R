@@ -19,6 +19,7 @@
 #'
 #' @examples
 #' read_pptx(system.file('extdata','example.pptx',package='readOffice'))
+#' read_pptx(system.file('extdata','example.pptx',package='readOffice'),diagrams=FALSE)
 #'
 #' @export
 read_pptx = function(pptx,tables = T,drawings = T,diagrams = T){
@@ -54,7 +55,7 @@ read_pptx = function(pptx,tables = T,drawings = T,diagrams = T){
     }
   }
 
-  output = purrr::map(slides,processSlide,tbl=tables,dgrm=diagrams,dlist=d)
+  output = purrr::map(slides,processSlide,tbl=tables,dgrm=diagrams,drw=drawings,dlist=d)
 
   unlink(td, recursive=TRUE)
   return(output)

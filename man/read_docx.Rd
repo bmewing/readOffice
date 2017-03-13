@@ -30,5 +30,6 @@ Diagrams are typically what Microsoft calls 'SmartArt'
 }
 \examples{
 read_docx(docx = system.file('extdata','example.docx',package='readOffice'))
+read_docx(docx = system.file('extdata','example.docx',package='readOffice'),diagrams=FALSE)
 
 }
