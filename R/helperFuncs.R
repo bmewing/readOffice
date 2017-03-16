@@ -92,7 +92,7 @@ processSlide = function(xml,dgrm,tbl,drw,dlist){
 
   blockContent = purrr::map(blocks,rvest::xml_nodes,css="a\\:p")
   bulleted = purrr::map(seq_along(blockContent),function(x){
-    output = if(grepl("^Title",blockNames[x])) {
+    output = if(grepl("^Title|^Subtitle|^Date Placeholder|^Slide Number|^TextBox",blockNames[x])) {
       purrr::map(blockContent[[x]],function(y){
         bullet = y %>%
           rvest::xml_nodes("a\\:buChar")
@@ -125,10 +125,15 @@ processSlide = function(xml,dgrm,tbl,drw,dlist){
 
   text = purrr::map(blockContent,function(x){
     purrr::map(x,function(y){
-      y %>%
-        rvest::xml_nodes("a\\:r") %>%
+      regText = y %>%
+        rvest::xml_nodes("a\\:t") %>%
         xml2::xml_text() %>%
         paste(collapse="")
+      mathText = y %>%
+        rvest::xml_nodes("m\\:t") %>%
+        xml2::xml_text() %>%
+        paste(collapse="")
+      paste0(regText,mathText)
     }) %>% unlist()
   })
 

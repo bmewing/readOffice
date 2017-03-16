@@ -56,8 +56,6 @@ read_docx = function(docx,tables = T,drawings = T,diagrams = T){
     item = item+1
   }
 
-  if(!("tbl" %in% types)) output = purrr::map(output,unlist)
-
   if(diagrams){
     d = list.files(file.path(td,"word","diagrams"),pattern = "data[0-9]+\\.xml",full.names = T)
     if(length(d) > 9){
