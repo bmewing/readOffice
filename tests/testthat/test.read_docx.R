@@ -6,7 +6,7 @@ testthat::test_that(".docx files load properly",{
   expect_equal(length(tdocx),3)
 })
 
-testthat::test_that("tables can be ignored",{
+testthat::test_that("docx tables can be ignored",{
   tdocx = read_docx(docx = system.file('extdata','example.docx',package='readOffice'),tables = F)
   expect_is(tdocx,"list")
   expect_is(tdocx[[1]],"list")
@@ -14,7 +14,7 @@ testthat::test_that("tables can be ignored",{
   expect_equal(length(tdocx),3)
 })
 
-testthat::test_that("diagrams can be ignored",{
+testthat::test_that("docx diagrams can be ignored",{
   tdocx = read_docx(docx = system.file('extdata','example.docx',package='readOffice'),diagrams = F)
   expect_is(tdocx,"list")
   expect_is(tdocx[[1]],"list")
@@ -22,7 +22,7 @@ testthat::test_that("diagrams can be ignored",{
   expect_equal(length(tdocx),2)
 })
 
-testthat::test_that("drawings can be ignored",{
+testthat::test_that("docx drawings can be ignored",{
   tdocx = read_docx(docx = system.file('extdata','example.docx',package='readOffice'),drawings = F)
   expect_is(tdocx,"list")
   expect_is(tdocx[[1]],"list")
